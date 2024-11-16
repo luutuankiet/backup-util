@@ -2,11 +2,12 @@
 
 # Function to display usage
 usage() {
-    echo "Usage: $0 [-f | -l] [-p PATH] [-o OUTPUT]"
-    echo "  -f, --full        Perform a full backup (includes everything)"
-    echo "  -l, --lightweight Perform a lightweight backup (excludes Python venvs and node_modules)"
-    echo "  -p, --path PATH   Specify the directory to back up"
-    echo "  -o, --output FILE Specify the output tarball file name"
+    echo "Usage: $0 [-f | -l] [-p PATH] [-o OUTPUT] [--no-timestamp|-n]"
+    echo "  -f, --full           Perform a full backup (includes everything)"
+    echo "  -l, --lightweight    Perform a lightweight backup (excludes Python venvs and node_modules)"
+    echo "  -p, --path PATH      Specify the directory to back up"
+    echo "  -o, --output FILE    Specify the output tarball file name"
+    echo "  -n, --no-timestamp   Omit timestamp from the backup filename"
     exit 1
 }
 
@@ -15,6 +16,7 @@ BACKUP_TYPE="full"  # Default backup type is full
 SOURCE_DIR=""
 BACKUP_FILE="backup.tar.gz"
 WORKDIR=$(pwd)
+NO_TIMESTAMP=0  # Flag to control timestamp appending
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -33,6 +35,10 @@ while [[ $# -gt 0 ]]; do
         -o|--output)
             BACKUP_FILE="$2"
             shift 2
+            ;;
+        -n|--no-timestamp)
+            NO_TIMESTAMP=1
+            shift
             ;;
         *)
             echo "Invalid option: $1"
@@ -80,9 +86,13 @@ cd "$SOURCE_DIR" || exit
 BACKUP_DIR="$WORKDIR/$BACKUP_FILE"
 mkdir -p "$BACKUP_DIR"  # Make the directory if it doesn't exist
 
-# Append date to the backup filename
-DATE_SUFFIX=$(date +%Y%m%d)
-BACKUP_FILE_NAME="${BACKUP_FILE}-${DATE_SUFFIX}.tar.gz"
+# Append date to the backup filename, unless --no-timestamp flag is set
+if [[ "$NO_TIMESTAMP" -eq 0 ]]; then
+    DATE_SUFFIX=$(date +%Y%m%d)
+    BACKUP_FILE_NAME="${BACKUP_FILE}-${DATE_SUFFIX}.tar.gz"
+else
+    BACKUP_FILE_NAME="${BACKUP_FILE}.tar.gz"
+fi
 
 # Print the constructed tar command for verification
 echo "The following tar command will be executed:"
