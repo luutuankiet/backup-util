@@ -1,0 +1,6 @@
+artifacts/*
+!/artifacts/
+!artifacts/.gitkeep
+.vscode
+rclone_exclude.txt
+script_conf.txt
