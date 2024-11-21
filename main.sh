@@ -15,6 +15,7 @@ echo "Starting backup process at $(date)" | tee -a "$LOG_FILE"
 
 # Step 1: Change to the /home/ken/dev/backups directory
 cd "$SCRIPT_DIR" || { echo "Failed to change directory"; exit 1; }
+# cd "$SCRIPT_DIR" || { echo "Failed to change directory"; exit 1; }
 
 # Log the directory change
 echo "Changed to \"$SCRIPT_DIR\"" | tee -a "$LOG_FILE"
@@ -33,7 +34,7 @@ fi
 
 # Step 3: Sync the backup with rclone to Backblaze B2
 echo "Starting rclone sync..." | tee -a "$LOG_FILE"
-sudo -u ken rclone sync "$ARTIFACTS_DIR" "$TARGET_BUCKET" --exclude-from "$EXCLUDE_CONF" --progress  | sudo -u ken tee -a "$LOG_FILE" 2>&1
+sudo -u ken rclone sync "$ARTIFACTS_DIR" "$TARGET_BUCKET" --exclude-from "$EXCLUDE_CONF" --progress  | tee -a "$LOG_FILE" 2>&1
 
 # Log the completion of the rclone sync
 if [[ $? -eq 0 ]]; then
